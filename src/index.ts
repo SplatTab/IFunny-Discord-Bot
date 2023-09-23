@@ -6,7 +6,6 @@ import {
 } from 'discord-interactions';
 import fetch from "node-fetch"
 import commands from './commands';
-import { env } from 'process';
 
 export interface Env {
   CLIENT_ID: string;
@@ -70,18 +69,12 @@ router.post('/', async (request, env) => {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
       })
     }).then(res => res.json())
-
-    //I dont know the real reason why its not working
-    //return new JsonResponse({
-    //  type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    //  data
-    //});
   }
 });
 
 router.get("/invite", async (request, env) => {
   let url = `https://discord.com/api/oauth2/authorize?client_id=${env.CLIENT_ID}&permissions=2147485696&scope=bot%20applications.commands`
-  
+
   return Response.redirect(url, 302)
 })
 

@@ -1,3 +1,6 @@
+import { env } from "process";
+import "../index"
+
 type Token = {
   access_token: string,
   token_type: string,
@@ -117,8 +120,8 @@ export class iFunny {
     async getToken() {
       try {
           const body = {
-            username: 'mcool2193@gmail.com',
-            password: 'kPHjV2_PU6rdem5KvggrqKDkqPD7Yp5U',
+            // username: email,
+            // password: pass,
             grant_type: 'password',
           };
 
