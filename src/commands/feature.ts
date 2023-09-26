@@ -1,7 +1,4 @@
-import { Command, Embed, Component } from ".";
-import { iFunny } from "./funny";
-
-const MAX_RETRIES = 3; // Maximum number of retry attempts
+import { Command, Component, funny } from ".";
 
 const command: Command = {
   data: {
@@ -10,32 +7,18 @@ const command: Command = {
   },
 
   async execute(interaction) {
-    async function retryOperation(retryCount: number) {
+    // iFunny's API weird or something so if we fail to get a meme we will just spam it 3 times till we get somewhere
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        // Fetch's featured meme from ifunny
-        const funny = new iFunny();
-        const response = await funny.getFeature();
+        // Have to get 4 memes so we can get a video(iFunny shows a video every 3 memes)
+        const response = await funny.getFeatures(4);
 
-        // Check that the response is not null before using it
         if (response) {
-          const meme = response.data.content.items[0];
+          // Choose one of four memes randomly
+          const meme = response.data.content.items[Math.floor(Math.random() * 4)];
 
-          // Embed with meme image that get's posted
-          const embed: Embed = {
-            title: meme.title,
-            description: meme.ocr_text.replace(/\n/g, ' '),
-            color: 0xFFD22E,
-            author: {
-              name: meme.creator.nick,
-              icon_url: meme.creator.photo.url,
-            },
-            image: {
-              url: meme.thumb.proportional_url,
-            },
-          };
-
-          // Button that links to the meme on ifunny.co
-          const urlbutton: Component = {
+          // Button that links to the meme page on iFunny
+          const urlButton: Component = {
             style: 5,
             label: "Link",
             url: meme.link,
@@ -43,33 +26,48 @@ const command: Command = {
             type: 2,
           };
 
-          return {
-            components: [
-              {
-                type: 1,
-                components: [urlbutton],
+          const components = [
+            {
+              type: 1,
+              components: [urlButton],
+            },
+          ];
+
+          // For video memes we just post the link to the video on iFunny's website might change this though
+          if (meme.type === "video_clip") {
+            return { content: meme.share_url, components};
+          }
+          else {
+            const embed = {
+              title: meme.title,
+              description: meme.ocr_text.replace(/\n/g, ' '),
+              color: funny.IFUNNY_YELLOW,
+              author: {
+                name: meme.creator.nick,
+                icon_url: meme.creator.photo.url,
               },
-            ],
-            embeds: [embed],
-          };
+              image: {
+                url: meme.thumb.proportional_url
+              }
+            }
+
+            return { embeds: [embed], components};
+          }
         } else {
           throw new Error('Response was not valid');
         }
       } catch (error) {
         console.error("Error:", error);
 
-        if (retryCount < MAX_RETRIES) {
-          // Retry the operation with an increased retry count
-          return retryOperation(retryCount + 1);
-        } else {
+        // I don't think we are going to get that meme damm you iFunny
+        if (attempt >= 3)
+        {
           return {
-            content: "An error occurred while fetching the collective!",
+            content: "An error occurred while fetching the feature! Is iFunny down?",
           };
         }
       }
     }
-
-    return retryOperation(0); // Start the retry with 0 retryCount
   },
 };
 

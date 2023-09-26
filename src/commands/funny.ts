@@ -1,13 +1,10 @@
-import { env } from "process";
-import "../index"
-
 type Token = {
   access_token: string,
   token_type: string,
   expires_in: number
 };
 
-type IFunnyResponse = {
+type Feed = {
   data: {
     content: {
       items: {
@@ -103,19 +100,47 @@ type IFunnyResponse = {
 
 export class iFunny {
     public token : string;
+    readonly IFUNNY_YELLOW = 0xFFD22E
 
     protected header = {
       Host: 'api.ifunny.mobi',
-      accept: 'application/json',
-      applicationstate: '1',
+      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
       authorization: 'Basic NjUzNjM0MzQ2MzM4MzI2MjJENjQ2NTY1NjMyRDM0MzAzMjM4MkQ2MTMxNjYzMzJEMzEzMzMxMzAzMzM0MzQzMzMzNjQ2MzM0X01zT0lKMzlRMjg6Y2Y2Njc5OTdiY2U5MTJhOTc1MDZhMmFlYjM0ZTI0MWI5NjZiNTdlZQ==',
-      'accept-language': 'en-IN',
+      'accept-language': 'en-US,en;q=0.5',
       'ifunny-project-id': 'iFunny',
       'content-type': 'application/x-www-form-urlencoded',
-      'content-length': '72',
-      'accept-encoding': 'application/json',
-      'user-agent': 'iFunny/6.16.1(1119178) Android/10 (Xiaomi; Redmi Note 7 Pro; Xiaomi)',
+      'accept-encoding': 'gzip, deflate, br',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0',
     };
+
+    async getFileSize(videoUrl: string) {
+      try {
+        // Send a HEAD request to get the headers without downloading the entire file
+        const response = await fetch(videoUrl, { method: "HEAD" });
+
+        if (response.ok) {
+          // Get the 'Content-Length' header value
+          const contentLength = response.headers.get("Content-Length");
+
+          if (contentLength) {
+            // Convert contentLength to a number (file size in bytes)
+            const fileSizeBytes = parseInt(contentLength, 10);
+
+            return fileSizeBytes;
+          } else {
+            throw new Error("Content-Length header not found.");
+          }
+        } else {
+          throw new Error(`Failed to fetch the video. Status code: ${response.status}`);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message);
+        } else {
+          console.log('unexpected error: ', error);
+        }
+      }
+    }
 
     async getToken() {
       try {
@@ -151,9 +176,9 @@ export class iFunny {
       }
     }
 
-    async getFeature(): Promise<IFunnyResponse | null> {
+    async getFeatures(limit: number): Promise<Feed | null> {
         try {
-          const response = await fetch('https://api.ifunny.mobi/v4/feeds/featured?limit=1', {
+          const response = await fetch('https://api.ifunny.mobi/v4/feeds/featured?limit=' + limit, {
             method: 'GET',
             headers: this.header,
           });
@@ -162,7 +187,7 @@ export class iFunny {
             throw new Error(`Error! status: ${response.status}`);
           }
 
-          const result = (await response.json()) as IFunnyResponse;
+          const result = (await response.json()) as Feed;
           return result
       } catch (error) {
         if (error instanceof Error) {
@@ -173,9 +198,9 @@ export class iFunny {
       }
     }
 
-    async getCollective(): Promise<IFunnyResponse | null> {
+    async getCollective(limit: number): Promise<Feed | null> {
       try {
-        const response = await fetch('https://api.ifunny.mobi/v4/feeds/collective?limit=1', {
+        const response = await fetch('https://api.ifunny.mobi/v4/feeds/collective?limit=' + limit, {
           method: 'POST',
           headers: this.header,
         });
@@ -184,7 +209,7 @@ export class iFunny {
           throw new Error(`Error! status: ${response.status}`);
         }
 
-        const result = (await response.json()) as IFunnyResponse;
+        const result = (await response.json()) as Feed;
         return result
     } catch (error) {
       if (error instanceof Error) {
