@@ -2,7 +2,6 @@ import { Router } from 'itty-router';
 import {
   InteractionResponseType,
   InteractionType,
-  InteractionResponseFlags,
   verifyKey,
 } from 'discord-interactions';
 import fetch from "node-fetch"

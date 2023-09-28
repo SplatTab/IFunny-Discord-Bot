@@ -1,9 +1,12 @@
-import { Command, Component, funny } from ".";
+import { Command, funny } from ".";
+import { Component } from "../types";
+import { MemeType } from "../ifunny/funny-types";
 
 const command: Command = {
-  data: {
-      name: "collective",
-      description: "Get's a random meme from collective feed"
+  data:
+  {
+    name: "collective",
+    description: "Get's a random meme from collective feed"
   },
 
   async execute(interaction) {
@@ -17,7 +20,7 @@ const command: Command = {
           // So we look for a video specifically then flip a coin whether to use that video or just choose another one of the 5 memes
           let meme = response.data.content.items[0];
           response.data.content.items.forEach(element => {
-            if (element.type === "video_clip" && Math.random() == 0) meme = element;
+            if (element.type == MemeType.video_clip && Math.random() == 0) meme = element;
             else meme = response.data.content.items[Math.floor(Math.random() * 7)];
           });
 
@@ -38,7 +41,7 @@ const command: Command = {
           ];
 
           // For video memes we just post the link to the video on iFunny's website might change this though
-          if (meme.type === "video_clip") {
+          if (meme.type == MemeType.video_clip) {
             return { content: meme.share_url, components};
           }
           else {

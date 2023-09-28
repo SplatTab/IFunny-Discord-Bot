@@ -1,9 +1,12 @@
-import { Command, Component, funny } from ".";
+import { Command, funny } from ".";
+import { Component } from "../types";
+import { MemeType } from "../ifunny/funny-types";
 
 const command: Command = {
-  data: {
-      name: "featured",
-      description: "Get's a random meme from featured feed"
+  data:
+  {
+    name: "featured",
+    description: "Get's a random meme from featured feed",
   },
 
   async execute(interaction) {
@@ -16,7 +19,6 @@ const command: Command = {
         if (response) {
           // Choose one of four memes randomly
           const meme = response.data.content.items[Math.floor(Math.random() * 4)];
-
           // Button that links to the meme page on iFunny
           const urlButton: Component = {
             style: 5,
@@ -34,7 +36,7 @@ const command: Command = {
           ];
 
           // For video memes we just post the link to the video on iFunny's website might change this though
-          if (meme.type === "video_clip") {
+          if (meme.type == MemeType.video_clip) {
             return { content: meme.share_url, components};
           }
           else {

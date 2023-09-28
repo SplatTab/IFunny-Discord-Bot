@@ -14,13 +14,10 @@
     "deploy": "wrangler publish",
     "env": "wrangler secret:bulk env.json"
   },
-  "author": "@SudhanPlayz",
+  "author": "@SplatTab",
   "dependencies": {
-    "axios": "^1.5.0",
-    "discord-api-types": "^0.37.15",
     "discord-interactions": "^3.2.0",
     "itty-router": "^2.6.6",
-    "node-fetch": "^2",
-    "ts-node": "^10.9.1"
+    "node-fetch": "^2"
   }
 }
