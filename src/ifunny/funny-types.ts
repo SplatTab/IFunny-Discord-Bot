@@ -90,7 +90,13 @@ export type Feed = {
   data: {
     content: {
       items: {
-        pic: {
+        video_clip?: {
+          screen_url: string;
+          bytes: number;
+          source_type: string;
+          duration: number; // In seconds
+        };
+        pic?: {
           webp_url: string;
         };
         id: string;

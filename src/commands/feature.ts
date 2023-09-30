@@ -1,5 +1,5 @@
 import { Command, funny } from ".";
-import { Component } from "../types";
+import { Component, Embed, MessageFlags } from "../types";
 import { MemeType } from "../ifunny/funny-types";
 
 const command: Command = {
@@ -40,16 +40,19 @@ const command: Command = {
             return { content: meme.share_url, components};
           }
           else {
-            const embed = {
-              title: meme.title,
-              description: meme.ocr_text.replace(/\n/g, ' '),
+            const embed: Embed = {
+              title: meme.title || "Unknown",
+              description: meme.ocr_text.replace(/\n/g, ' ') || "Unknown",
               color: funny.IFUNNY_YELLOW,
               author: {
-                name: meme.creator.nick,
-                icon_url: meme.creator.photo.url,
+                name: meme.creator.nick || "Unknown",
+                icon_url: meme.creator.photo?.url || "https://cdn-icons-png.flaticon.com/512/1144/1144760.png"
               },
               image: {
                 url: meme.thumb.proportional_url
+              },
+              footer: {
+                text: `🙂 ${meme.num.smiles} | 💬 ${meme.num.comments} | ♻️ ${meme.num.shares} | 👁️ ${meme.num.views}`
               }
             }
 
@@ -64,9 +67,7 @@ const command: Command = {
         // I don't think we are going to get that meme damm you iFunny
         if (attempt >= 3)
         {
-          return {
-            content: "An error occurred while fetching the feature! Is iFunny down?",
-          };
+          return { content: "An error occurred while fetching the feature! Is iFunny down?", flags: MessageFlags.Ephemeral};
         }
       }
     }
