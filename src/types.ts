@@ -72,16 +72,38 @@ export type GuildMember = {
   };
 };
 
+export type User = {
+  id: Snowflake;
+  username: string;
+  discriminator: string;
+  global_name?: string;
+  avatar?: string;
+  bot?: boolean;
+  system?: boolean;
+  mfa_enabled?: boolean;
+  banner?: string;
+  accent_color?: number;
+  locale?: string;
+  verified?: boolean;
+  email?: string;
+  flags?: number;
+  premium_type?: number;
+  public_flags?: number;
+  avatar_decoration?: string;
+}
+
 export type Interaction = {
   id: Snowflake;
   type: InteractionType;
   data?: ApplicationCommandInteractionData;
-  guild_id: Snowflake;
-  channel_id: Snowflake;
-  member: GuildMember;
+  guild_id?: Snowflake;
+  channel_id?: Snowflake;
+  member?: GuildMember;
+  user?: User;
   token: string;
   version: number;
-};
+}
+
 
 export enum EmbedType {
   rich = "rich",

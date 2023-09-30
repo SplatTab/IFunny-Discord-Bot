@@ -1,5 +1,5 @@
 import { Command, funny } from ".";
-import { Embed, MessageFlags } from "../types";
+import { ApplicationCommandOptionType, Embed, MessageFlags } from "../types";
 
 const command: Command = {
   data:
@@ -10,7 +10,7 @@ const command: Command = {
         {
             name: "username",
             description: "iFunny nickname",
-            type: 3,
+            type: ApplicationCommandOptionType.STRING,
             required: true
         }
     ]
